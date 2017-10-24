@@ -1,1 +1,1 @@
-Mimis is homo.
+Mimis <3 Adam.
