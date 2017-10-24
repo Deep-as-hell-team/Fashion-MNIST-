@@ -1,28 +1,39 @@
 import heapq
 import numpy as np
-def accuracy_per_class(model, x_data, y_data , level):
+ 
+#A dictionary of our classes and their label
+label = {0:'T-shirt/top', 1: 'Trouser', 2: 'Pullover', 3: 'Dress', 4: 'Coat', 
+             5: 'Sandal', 6: 'Shirt', 7:'Sneaker', 8: 'Bag', 9:'Ankle Boot'
+          }
+    
+    
+def accuracy_per_class(model, x_data, y_data , level, label = label):
     '''
     A function that returns the accuracy per class based on the level of the probabilities.
     
     Parameters
     ----------
-    model: A Keras Sequential model
+    model: A trained Keras Sequential model
+    
     x_data: array
         The array of images
+        
     y_data: array
         The hot encoded sequence of the labels
+        
     level: int
         The level of the probabilities (Ask Mimis to tell you more about)
+        
+    label: dict
+        A dictionary for the different classes
+        
     ---------------------------------------------------------------------------
     Returns:
          The accuracy per class
     '''
     if level>9:
         raise ValueError('The level of should be up to the number of classes')
-    #A dictionary of our classes and their label
-    label = {0:'T-shirt/top', 1: 'Trouser', 2: 'Pullover', 3: 'Dress', 4: 'Coat', 
-             5: 'Sandal', 6: 'Shirt', 7:'Sneaker', 8: 'Bag', 9:'Ankle Boot'
-            }
+
     #One hot to integer
     one_hot_to_int = np.argmax(y_data, axis = 1)
     #The number of the classes
