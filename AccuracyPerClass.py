@@ -40,7 +40,7 @@ def accuracy_per_class(model, x_data, y_data , level):
             if y_true in y_pred:
                 counter +=1 
         accuracy = float(counter/len(indices))
-        print ('The class {0} has accuracy {1}'.format(label[every_class], accuracy))
+        print ('The class {0} with level {1} has accuracy {2}'.format(label[every_class], level,accuracy))
         results[every_class] = accuracy      
         
     return results    
