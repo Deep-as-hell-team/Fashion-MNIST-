@@ -1,4 +1,5 @@
 import heapq
+import numpy as np
 def accuracy_per_class(model, x_data, y_data , level):
     '''
     A function that returns the accuracy per class based on the level of the probabilities.
@@ -12,7 +13,8 @@ def accuracy_per_class(model, x_data, y_data , level):
         The hot encoded sequence of the labels
     level: int
         The level of the probabilities (Ask Mimis to tell you more about)
-     returns:
+    ---------------------------------------------------------------------------
+    Returns:
          The accuracy per class
     '''
     if level>9:
