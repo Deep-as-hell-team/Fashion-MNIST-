@@ -37,6 +37,14 @@ class DataHandler():
 
         return y_test_preds
 
+    def get_base_index(self, y_class_inds):
+        '''Convert an arrray of e.g. 04567 into 01234
+
+        @:param y_class_inds: class indexes (04567)
+        '''
+        class_inds = np.unique(y_class_inds)
+        return [np.where(class_inds == y) for y in y_class_inds]
+
     def __load_fashion_data(self, path="FashionData/FashionPDEngDM.npz"):
         '''Load Fashion MNIST data set.'''
 
