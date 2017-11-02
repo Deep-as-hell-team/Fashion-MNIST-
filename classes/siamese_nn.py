@@ -46,7 +46,8 @@ class SiameseNN(NNNetwork):
                     'fc_size0': hp.choice('fc_size0', [64, 128, 256]),
 
                     'nb_epochs': 40,
-                    'optimizer': 'adam',
+                    'lr': hp.choice('lr', [0.01, 0.001, 0.0001]),
+                    'optimizer': Adam,
                     'activation': 'relu'
                     }
         return h_params
@@ -129,7 +130,7 @@ class SiameseNN(NNNetwork):
 
     def _model_fit(self, h_params, model):
 
-        model.compile(loss='binary_crossentropy', optimizer=h_params['optimizer'])
+        model.compile(loss='binary_crossentropy', optimizer=h_params['optimizer'](h_params['lr']))
 
         lrate = LearningRateScheduler(classes.step_decay)
         earlyStopping = keras.callbacks.EarlyStopping(monitor='acc', min_delta=0.01, patience=3, verbose=0, mode='auto')

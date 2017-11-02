@@ -7,8 +7,7 @@ from classes.nn_network import NNNetwork
 import matplotlib.pyplot as plt
 from sklearn.metrics import confusion_matrix
 from hyperopt import Trials, STATUS_OK, tpe, hp, fmin
-from hyperas.distributions import choice, uniform, conditional
-from hyperas import optim
+from keras.optimizers import Adam
 from keras.callbacks import LearningRateScheduler
 import classes
 
@@ -41,6 +40,8 @@ class BaseModel(NNNetwork):
                  'fc_size0': hp.choice('fc_size0', [64, 128, 256]),
 
                  'nb_epochs': 40,
+                 'lr': hp.choice('lr', [0.01, 0.001, 0.0001]),
+                 'optimizer': Adam,
                  'optimizer': 'adam',
                  'activation': 'relu'
                  }
@@ -72,7 +73,7 @@ class BaseModel(NNNetwork):
 
     def _model_fit(self, h_params, model):
 
-        model.compile(loss=keras.losses.categorical_crossentropy, optimizer=h_params['optimizer'],
+        model.compile(loss=keras.losses.categorical_crossentropy, optimizer=h_params['optimizer'](h_params['lr']),
                       metrics=['accuracy'])
 
         lrate = LearningRateScheduler(classes.step_decay)
