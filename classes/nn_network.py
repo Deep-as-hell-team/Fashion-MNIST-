@@ -6,10 +6,16 @@ import keras
 from hyperopt import Trials, STATUS_OK, tpe, hp, fmin
 
 class NNNetwork():
+    '''This is a base class for all Neural Network models.'''
 
     def __init__(self, data_handler, c_04567):
+        '''Init.
+
+        :param data_handler: DataHandler class
+        :param c_04567: whether to use 04567 data or not
+        '''
         self.dh = data_handler
-        self.tuning_iter = 0
+        self.tuning_iter = 0 # hyperram iteration eval counter
 
         self.x_train, self.y_train = self.dh.get_data(return_train=True, c_04567=c_04567)
         self.x_test, self.y_test = self.dh.get_data(return_train=False, c_04567=c_04567)
@@ -30,22 +36,30 @@ class NNNetwork():
 
     @abc.abstractmethod
     def _model_fit(self, h_params, model):
+        ''' Fit the model.
+
+        :param h_params: hyper parameters for the model
+        :param model: Keras.Model to be trained
+        :return: Trained model.
+        '''
         raise NotImplemented("Not implemented.")
 
     def _get_hyper_params(self):
+        '''Returns pre-defined hyperparamters of the model.'''
         raise NotImplemented("Not implemented.")
 
     def train_model(self, h_params, hyper_param_tuning = True):
         '''Train a model given hyper params tuning.
 
         @:param h_params: space of hyper params
+        @:param hyper_param_tuning if True, omit some printing
         @:return dict(loss, status, model)
         '''
 
         model = self._define_model_structure(h_params)
         model = self._model_fit(h_params, model)
 
-        accs = self.compute_accuracy(model, max_acc_level=1, verbose=False)
+        accs = self.get_accuracy(model, max_acc_level=1, verbose=False)
         acc = accs[0]['acc']
         if hyper_param_tuning:
             print('Test accuracy of model {}/{} is {:.2%}:'.format(self.tuning_iter, self.max_evals, acc))
@@ -55,8 +69,11 @@ class NNNetwork():
         return {'loss': -acc, 'status': STATUS_OK, 'model': model}
 
     def tune_hyper_params(self, max_evals):
-        '''Tune hyper parameters. Returns the best model'''
-        # nice exmaple at https://github.com/fchollet/keras/issues/1591
+        '''
+        Tune hyper parameters.
+        :param max_evals: nummber of different hyper-params sets to be tried out
+        :return: (best model params, best accuracy, Trials --> all models)
+        '''
 
         trials = Trials()
         self.tuning_iter = 0
@@ -67,11 +84,38 @@ class NNNetwork():
         return best, best_model_acc, trials
 
     @abc.abstractmethod
-    def compute_accuracy(model, max_acc_level, verbose):
-        '''Compute accuracy on the test set.'''
+    def get_accuracy(self, model, max_acc_level, verbose):
+        '''Get accuracy. Make predictions given the model and call  _compute_accuracy.
+
+        :param model: Keras.Model
+        :param max_acc_level: Maximum accuracy level. E.g. if 2, return accumulative accuracy of two best guesses
+        :param verbose: whether to print intermediate output
+        :return: dict(acc = number, y_pred = [])
+        '''
+
         raise NotImplemented("Not implemented.")
 
-    def _compute_accuracy_at_level(self, max_acc_level, y_pred_classes, y_true, verbose = True):
+    @abc.abstractmethod
+    def _predict_class(self, model, x, max_acc_level):
+        '''Give a model, given prediction for input.
+
+        :param model: Keras.Model
+        :param x: data
+        :param max_acc_level:  Maximum accuracy level.
+        :return: y predictions
+        '''
+
+        raise NotImplemented("Not implemented.")
+
+    def _compute_accuracy(self, max_acc_level, y_pred_classes, y_true, verbose = True):
+        ''' Compute accuracy given the predictions and ground-truths.
+
+        :param max_acc_level: Maximum accuracy level. E.g. if 2, return accumulative accuracy of two best guesses
+        :param y_pred_classes: y prediction
+        :param y_true: y ground-true
+        :param verbose: whether to print intermediate output
+        :return: dict(acc = number, y_pred = [])
+        '''
 
         accs_at_level = []
         for acc_level in range(1, max_acc_level + 1):
@@ -88,7 +132,7 @@ class NNNetwork():
 
         @:param cm: confusion matrix computed by sklearn
         @:param classes_names: names of the classes
-        @:param normalize: whether to print normlized matrix
+        @:param normalize: whether to print normalized matrix
         @:param title: title of the confusion matrix
         @:param cmap: colors of the plot
 

@@ -1,8 +1,7 @@
-import numpy as np
 import keras
-from keras.models import Sequential, Model
-from keras.layers import Dense, Dropout, Flatten, Lambda, Input
-from hyperopt import Trials, STATUS_OK, tpe, hp, fmin
+from keras.models import Model
+from keras.layers import Dense, Dropout
+from hyperopt import hp
 from keras.callbacks import LearningRateScheduler
 from classes.base_model import BaseModel
 from keras.optimizers import Adam
@@ -10,22 +9,22 @@ import classes
 
 
 class TransferLearning(BaseModel):
+    '''Neural network model that is able to use pre-trained model to initialize weights.'''
 
     def __init__(self, data_handler, c_04567):
         super().__init__(data_handler, c_04567)
-        self.base_model = None
+        self.base_model = None #base model from which weights will be initiliazed
 
     def _get_hyper_params(self):
-        '''Return the space of hyperparameters to tune the model.'''
-
         h_params = {
                  'train_conv0': hp.choice('train_conv0', [True, False]),
                  'train_conv1': hp.choice('train_conv1', [True, False]),
+                 'train_conv2': hp.choice('train_conv2', [True, False]),
 
                  'dropout0': hp.uniform('dropout0', .25, .75),
-                 'fc_size0': hp.choice('fc_size0', [64, 128, 256]),
+                 'fc_size0': hp.choice('fc_size0', [64, 128, 256, 512, 1024]),
 
-                 'nb_epochs': 40,
+                 'nb_epochs': 80,
                   'lr': hp.choice('lr', [0.001, 0.0001, 0.00001]),
                  'optimizer': Adam,
                  'activation': 'relu'
@@ -33,13 +32,13 @@ class TransferLearning(BaseModel):
         return h_params
 
     def _define_model_structure(self, params):
-        '''Given the base model, defines which layers will be trainable and set FC layers.'''
 
         if self.base_model is None:
             raise ValueError("Base model has not been defined. Call set_base_model(...) first.")
 
-        self.base_model.layers[0].trainable = params['train_conv0'] and params['train_conv1']
-        self.base_model.layers[1].trainable = params['train_conv1']
+        self.base_model.layers[0].trainable = params['train_conv0'] and params['train_conv1'] and params['train_conv2']
+        self.base_model.layers[1].trainable = params['train_conv1'] and params['train_conv2']
+        self.base_model.layers[4].trainable = params['train_conv2']
 
         # adding a dense layer behind flatten_1 layers (i.e., layer[-4])
         x = Dense(params['fc_size0'], activation=params['activation'], name="dense_new0")(

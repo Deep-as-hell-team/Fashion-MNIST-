@@ -2,9 +2,10 @@ import numpy as np
 from keras import backend as K
 from keras.preprocessing.image import ImageDataGenerator
 import matplotlib.pyplot as plt
-import keras
 
 class DataHandler():
+    '''A class that handles all data functionality.'''
+
     def __is_channel_first(self):
         return K.image_data_format() == 'channels_first'
 
@@ -15,13 +16,13 @@ class DataHandler():
             X = X.reshape(X.shape[0], 1, self.img_rows, self.img_cols)
         else:
             X = X.reshape(X.shape[0], self.img_rows, self.img_cols, 1)
-
         X = X.astype('float32') / 255
-        # convert class vectors to binary class matrices
-        # y = keras.utils.to_categorical(y, num_classes)
+
         return X, y
 
     def load_data(self, path=None):
+        '''Wrapper to loading data.'''
+
         if path is None:
             self.__load_fashion_data()
 
@@ -30,6 +31,7 @@ class DataHandler():
 
         @:param y_pred_inds: 2D array of (num_data, max_acc_level)
         @:param max_acc_level: number of best guesses
+        @:param class_inds: e.g. 04567
         '''
         y_pred_inds = y_pred_inds.reshape(-1)
         y_test_preds = np.array([class_inds[y_ind] for y_ind in y_pred_inds])
@@ -57,8 +59,6 @@ class DataHandler():
                                     'Coat', 'Sandal', 'Shirt', 'Sneaker', 'Bag', 'Ankle boot'])
         self.class_names04567 = self.class_names[self.ind_04567]
         self.class_names12389 = self.class_names[self.ind_12389]
-
-        #self.num_classes_04567 = 5 # classes to classify (04567)
 
         # Extracting data
         # - Classes 04567 have one data observation per class.
@@ -103,7 +103,7 @@ class DataHandler():
         plt.show()
 
     def augment_data(self, use_train, c_04567, N, visualize=False, **kwargs):
-        ''' Augment currectly loaded data.
+        ''' Augment defined data.
 
         @:param use_train: BOOL wheather to augment train data
         @:param class_04567: BOOL wheather to augment 04567 or 12389
@@ -111,28 +111,23 @@ class DataHandler():
         @:param visualize: whether to visualize the augmented images
         @:param **kwaks: parameters to the Keras.ImageGenerator
 
-        Return: (x, y) augmneted data
+        @:return None.
         '''
 
-        num_columns = 2  # for priting
         if kwargs is None:
             print("Parameters for the image generator are empty. Running the generator with the defautl params.")
 
         x, y = self.__get_original_data(return_train=use_train, c_04567=c_04567)
-
         img_gen = ImageDataGenerator(**kwargs)
-        # print(img_gen)
         img_gen.fit(x)
 
         data_gen = img_gen.flow(x, y, batch_size=x.shape[0])  # we generate as much as the size of the data
 
         x_aug = []
         y_aug = []
-
         for i, data_batch in enumerate(data_gen):
             if N <= i:  # in every iteration, one instance per class is generated
                 break
-
             x_batch, y_batch = data_batch
             x_aug.append(x_batch)
             y_aug.append(y_batch)
@@ -142,38 +137,43 @@ class DataHandler():
 
         # reshaping such that the array has the shape of (# data, 28, 28, 1)
         x_aug = np.array(x_aug).reshape((-1, self.img_rows, self.img_rows, 1))
-
         # reshaping to shape of (# data)
         y_aug = np.array(y_aug).reshape((-1))
 
         self.__set_data(x_aug, y_aug, set_train=use_train, c_04567=c_04567)
 
     def get_data(self, return_train, c_04567):
-        '''Getter for the loaded data (can be alrady augmented).'''
+        '''Getter for the loaded data (can be alrady augmented)
+
+        :param return_train: whether to return train or test data
+        :param c_04567: whether to return 04567 classes or 12389
+        :return: (x, y)
+        '''
 
         if return_train and c_04567:
             return self.x_train_04567, self.y_train_04567
-
         if return_train and not c_04567:
             return self.x_train_12389, self.y_train_12389
-
         if not return_train and c_04567:
             return self.x_test_04567, self.y_test_04567
-
         if not return_train and not c_04567:
             return self.x_test_12389, self.y_test_12389
 
     def __set_data(self, x, y, set_train, c_04567):
-        '''Setter for the loaded data.'''
+        '''Set x, y to the given data.
+
+        :param x: x to be set
+        :param y: y to be set
+        :param set_train: whether to return train or test data
+        :param c_04567:  whether to return 04567 classes or 12389
+        '''
+
         if set_train and c_04567:
             self.x_train_04567, self.y_train_04567 = x, y
-
         if set_train and not c_04567:
             self.x_train_12389, self.y_train_12389 = x, y
-
         if not set_train and c_04567:
             self.x_test_04567, self.y_test_04567 = x, y
-
         if not set_train and not c_04567:
             self.x_test_12389, self.y_test_12389 = x, y
 
@@ -182,13 +182,10 @@ class DataHandler():
 
         if return_train and c_04567:
             return self.x_train_04567_orig, self.y_train_04567_orig
-
         if return_train and not c_04567:
             return self.x_train_12389_orig, self.y_train_12389_orig
-
         if not return_train and c_04567:
             return self.x_test_04567_orig, self.y_test_04567_orig
-
         if not return_train and not c_04567:
             return self.x_test_12389_orig, self.y_test_12389_orig
 
@@ -201,15 +198,3 @@ class DataHandler():
         self.x_train_12389_orig, self.y_train_12389_orig = np.copy(x_train_12389), np.copy(y_train_12389)
         self.x_test_04567_orig, self.y_test_04567_orig = np.copy(x_test_04567), np.copy(y_test_04567)
         self.x_test_12389_orig, self.y_test_12389_orig = np.copy(x_test_12389), np.copy(y_test_12389)
-
-    def __get_val_data(self):
-        raise (NotImplementedError())
-
-    def train_model(self):
-        raise (NotImplementedError())
-
-    def validate_model(self):
-        raise (NotImplementedError())
-
-    def test_model(self):
-        raise (NotImplementedError())
