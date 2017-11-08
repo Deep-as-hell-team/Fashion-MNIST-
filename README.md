@@ -3,7 +3,7 @@
 The goal of the this project is to build a classifier using CNN that is trained using only *one* training observertaion per class. 
 
 ## Dataset
-![Dataset](/img/data_classes.png "Dataset" =250x)
+<img src="/img/data_classes.png" width="400" alt="Dataset">
 
 There are available two subsets of [Fashion-MNIST](https://github.com/zalandoresearch/fashion-mnist) dataset for training a CNN:
 
