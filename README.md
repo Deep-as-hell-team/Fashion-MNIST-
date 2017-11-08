@@ -1,28 +1,30 @@
 # Classifying Fashion-MNIST with Keras using limited data
 
-The goal of the this project is to build a classifier using CNN that is trained using only *one* training observertaion per class. 
+The goal of the this project is to build a classifier using Convolutional Neural Network (CNN) that is trained using only *one* training observertaion per class. 
 
 ## Dataset
 <img src="/img/data_classes.png" width="400" alt="Dataset">
 
-There are available two subsets of [Fashion-MNIST](https://github.com/zalandoresearch/fashion-mnist) dataset for training a CNN:
+There are available two subsets of [Fashion-MNIST](https://github.com/zalandoresearch/fashion-mnist) dataset for training:
 
- 1) subset contains 30,000 labeled training examples of the classes 1,2,3,8,9.
+ 1) subset contains 30,000 labeled training examples of the classes 1,2,3,8,9 (see the labels at the image above).
  2) subset contains 5 labeled training exmaple from the classes 0,4,5,6,7 (i.e., one per class) and 29992 unlabeled examples.
 
-Furthermore, we have available a test set for all classes containing 1,000 labelled data observation per class. Nevertheless, the classification performance is evaluated only on test set of classes 0,4,5,6,7. 
+Furthermore, we have available a test set for all classes containing 1,000 labelled data observation per class. Nevertheless, the classification performance is evaluated only on the test set of classes 0,4,5,6,7. 
 
 ## Approach
-We carried out three task: 
+We carried out three tasks: 
 
 1) Created a baseline. The baseline is a CNN trained on 5 augmented examples of 0,4,5,6,7.
 
-2) Performed transfer learning. We trained a CNN model using data from classes 1,2,3,8,9 and then use the weights from this model to initilize a CNN model that is trained just like the baseline.
+2) Performed transfer learning. We trained a CNN model using data from classes 1,2,3,8,9 and then use the weights from this model to initilize another CNN model that is trained just like the baseline.
 
-3) Performed one-shot learning. We created a siamese network following approach of Koch et. al (2015) with slight modifications. We created 100 correct and 100 incorect pairs for each class; in total 1000 pairs. We trained the siamese network with 70% of this data. The rest of the data were used for validation. The siamese network scores 95% on the verificaiton tasks (i.e., recognizing pairs).
+3) Performed one-shot learning. We created a siamese network following approach of Koch et. al (2015) with slight modifications. We created 100 correct and 100 incorect pairs for each class; in total 1000 pairs. The siamese network scores 95% on the verificaiton tasks (i.e., recognizing pairs).
+
+Hyperparameters for each model were optimizer using Tree of Parzen Estimators (TPE) run with 50 evaluations.  
 
 ## Results
-The results of the models are evaluated using accuracy on the set of classes 0,4,5,6,7. 
+The results of the models are measured by accuracy on the set of classes 0,4,5,6,7. 
 
 | Model  | Accuracy |
 | ------------- | ------------- |
@@ -44,6 +46,6 @@ The results of the models are evaluated using accuracy on the set of classes 0,4
     └── Run.ipynb                  # The main access point
 
 ## Acknowledgement
-This project was a part of Data Mining module in [JADS](http://jads.nl) led by Vlado Menkovski and Decebal Mocanu.
+This project was a part of Data Mining module in [JADS](http://jads.nl) led by Vlado Menkovski and Decebal Mocanu. 
 
 
