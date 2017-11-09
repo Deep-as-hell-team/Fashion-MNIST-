@@ -19,7 +19,9 @@ We carried out three tasks:
 
 2) Performed transfer learning. We trained a CNN model using data from classes 1,2,3,8,9 and then use the weights from this model to initilize another CNN model that is trained just like the baseline.
 
-3) Performed one-shot learning. We created a siamese network following approach of Koch et. al (2015) with slight modifications. We created 100 correct and 100 incorect pairs for each class; in total 1000 pairs. The siamese network scores 95% on the verificaiton tasks (i.e., recognizing pairs).
+3) Performed transfer learning from larger Neural Networks. We took the Xception model, InceptionV3 model, and the ResNet50 model as the pre-trained models. Then we re-trained the last layer on the 5 augmented examples of 0,4,5,6,7. 
+
+4) Performed one-shot learning. We created a siamese network following approach of Koch et. al (2015) with slight modifications. We created 100 correct and 100 incorect pairs for each class; in total 1000 pairs. The siamese network scores 95% on the verificaiton tasks (i.e., recognizing pairs).
 
 Hyperparameters for each model were optimizer using Tree of Parzen Estimators (TPE) run with 50 evaluations.  
 
