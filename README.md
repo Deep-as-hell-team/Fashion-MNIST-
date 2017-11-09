@@ -30,7 +30,10 @@ The results of the models are measured by accuracy on the set of classes 0,4,5,6
 | ------------- | ------------- |
 | 1. Baseline  | 66.2% |
 | 2. Transfer learning  | 66.6% |
-| 3. Siamese network  | 45%  |
+| 3. Xception model  | 63% |
+| 4. InceptionV3 model  | 55% |
+| 5. ResNet50 model  | 58% |
+| 6. Siamese network  | 45%  |
 
 ## File structure
     ├── classes                    
