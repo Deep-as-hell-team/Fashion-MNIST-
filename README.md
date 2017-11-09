@@ -44,6 +44,7 @@ The results of the models are measured by accuracy on the set of classes 0,4,5,6
     │   ├── FashionPDEngDM.npz     # Prepared [Fashion-MNIST](https://github.com/zalandoresearch/fashion-mnist) data set (already splitted into the classes)
     └── Readme.md                    
     └── Run.ipynb                  # The main access point
+    └── Xception.ipynb             # Three larger models for transfer learning 
 
 ## Acknowledgement
 This project was a part of Data Mining module in [JADS](http://jads.nl) led by Vlado Menkovski and Decebal Mocanu. 
